@@ -1,11 +1,11 @@
 import { Container, ContainerSucces } from './styles'
-import { useForm, ValidationError } from '@formspree/react'
+import { useForm} from '@formspree/react'
 import { toast, ToastContainer } from 'react-toastify'
 import { useEffect, useState } from 'react'
 import validator from 'validator'
 
 export function Form() {
-  const [state, handleFormspreeSubmit] = useForm('xknkpqry')
+  const [state] = useForm('xknkpqry')
   const [validEmail, setValidEmail] = useState(false)
   const [message, setMessage] = useState('')
   const [formData, setFormData] = useState({

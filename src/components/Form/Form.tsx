@@ -1,95 +1,155 @@
-import { Container } from "./styles";
-import githubIcon from "../../assets/github.svg";
-import externalLink from "../../assets/external-link.svg";
-import ScrollAnimation from "react-animate-on-scroll";
+import { Container, ContainerSucces } from './styles'
+import { useForm, ValidationError } from '@formspree/react'
+import { toast, ToastContainer } from 'react-toastify'
+import { useEffect, useState } from 'react'
+import validator from 'validator'
 
+export function Form() {
+  const [state, handleFormspreeSubmit] = useForm('xknkpqry')
+  const [validEmail, setValidEmail] = useState(false)
+  const [message, setMessage] = useState('')
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    message: '',
+  })
+  const [errors, setErrors] = useState<any>({})
 
-export function Project() {
+  function verifyEmail(email: string) {
+    if (validator.isEmail(email)) {
+      setValidEmail(true)
+    } else {
+      setValidEmail(false)
+    }
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    const newErrors: any = {}
+
+    // Basic validation checks
+    if (!formData.name) newErrors.name = 'Name is required'
+    if (!formData.email) {
+      newErrors.email = 'Email is required'
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = 'Email address is invalid'
+    }
+    if (!formData.message) newErrors.message = 'Message is required'
+
+    if (Object.keys(newErrors).length === 0) {
+      try {
+        // Send data to the backend API
+        const response = await fetch('https://backend-portfolio-1-kh3g.onrender.com/api/submitForm', {  // Update URL if deployed
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(formData),
+        })
+
+        if (response.ok) {
+          toast.success('Form successfully submitted!', {
+            position: toast.POSITION.BOTTOM_LEFT,
+            pauseOnFocusLoss: false,
+            closeOnClick: true,
+            hideProgressBar: false,
+            toastId: 'succeeded',
+          })
+          setFormData({ name: '', email: '', message: '' })  // Clear the form
+          // Refresh the page after successful submission
+          setTimeout(() => {
+            window.location.reload()
+          }, 2000)  // Delay refresh to allow toast to show
+
+        } else {
+          const result = await response.json()
+          alert(`Submission failed: ${result.message}`)
+        }
+      } catch (error) {
+        console.error('Error submitting form:', error)
+        alert('An error occurred while submitting the form.')
+      }
+    } else {
+      setErrors(newErrors)  // Display validation errors
+    }
+  }
+
+  useEffect(() => {
+    if (state.succeeded) {
+      toast.success('Email successfully sent!', {
+        position: toast.POSITION.BOTTOM_LEFT,
+        pauseOnFocusLoss: false,
+        closeOnClick: true,
+        hideProgressBar: false,
+        toastId: 'succeeded',
+      })
+      setFormData({ name: '', email: '', message: '' })  // Clear the form
+    }
+  }, [state.succeeded])
+
+  if (state.succeeded) {
+    return (
+      <ContainerSucces>
+        <h3>Thanks for getting in touch!</h3>
+        <button
+          onClick={() => {
+            window.scrollTo({ top: 0, behavior: 'smooth' })
+          }}
+        >
+          Back to the top
+        </button>
+        <ToastContainer />
+      </ContainerSucces>
+    )
+  }
+
   return (
-    <Container id="project">
-      <h2>My Projects</h2>
-      <div className="projects">
-
-        <ScrollAnimation animateIn="flipInX">
-          <div className="project">
-            <header>
-              <svg width="50" xmlns="http://www.w3.org/2000/svg" role="img" viewBox="0 0 24 24" fill="none" stroke="#23ce6b" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round"> <title>Folder</title> <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path> </svg>
-              <div className="project-links">
-                <a href="https://github.com/amitmisal24/file-sharing-app" target="_blank" rel="noreferrer">
-                  <img src={githubIcon} alt="Visit site" /></a>
-                <a href="https://github.com/amitmisal24/file-sharing-app" target="_blank" rel="noreferrer">
-                  <img src={externalLink} alt="Visit site" />
-                </a> </div>
-            </header>
-            <div className="body">
-              <h3>file-sharing-app</h3>
-              <p> A file-sharing app can be developed using various technologies depending on the requirements, such as real-time sharing, scalability, security, or platform-specific needs. Below are the commonly used technologies grouped by functionality. </p>
-            </div>
-            <footer> <ul className="tech-list"> <li>React.js</li> <li>Express JS</li> <li>Node.js</li> <li>MongoDB</li></ul> </footer>
-          </div>
-        </ScrollAnimation>
-
-        <ScrollAnimation animateIn="flipInX">
-          <div className="project">
-            <header>
-              <svg width="50" xmlns="http://www.w3.org/2000/svg" role="img" viewBox="0 0 24 24" fill="none" stroke="#23ce6b " strokeWidth="1" strokeLinecap="round" strokeLinejoin="round"><title>Folder</title> <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path> </svg>
-              <div className="project-links">
-                <a href="https://github.com/amitmisal24/todo-frontend" target="_blank" rel="noreferrer">
-                  <img src={githubIcon} alt="Visit site" /> </a>
-                <a href="https://github.com/amitmisal24/todo-frontend" target="_blank" rel="noreferrer">
-                  <img src={externalLink} alt="Visit site" /></a>
-              </div>
-            </header>
-            <div className="body">
-              <h3>To Do WEB-Application</h3>
-              <p>
-              The Todo Application is a frontend project designed to help users manage tasks efficiently. Users can add, view, update, and delete tasks. The application offers an intuitive interface for organizing daily activities, ensuring productivity and task prioritization.
-              </p>
-            </div>
-            <footer>
-              <ul className="tech-list">
-                <li>MongoDB</li>
-                <li>Express JS</li>
-                <li>React </li>
-                <li>Node JS </li>
-                <li>Rest API </li>
-              </ul>
-            </footer>
-          </div>
-        </ScrollAnimation>
-
-        <ScrollAnimation animateIn="flipInX">
-          <div className="project">
-            <header>
-              <svg width="50" xmlns="http://www.w3.org/2000/svg" role="img" viewBox="0 0 24 24" fill="none" stroke="#23ce6b" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
-                <title>Folder</title>
-                <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
-              </svg>
-              <div className="project-links">
-                <a href="https://github.com/amitmisal24/frontend" target="\_blank" rel="noreferrer">
-                  <img src={githubIcon} alt="Visit site" />
-                </a>
-                <a href="https://frontend-portfolio-8ze5.onrender.com/" target="\_blank" rel="noreferrer">
-                  <img src={externalLink} alt="Visit site" />
-                </a>
-              </div>
-            </header>
-            <div className="body">
-              <h3>Portfolio Ver. 1</h3>
-              <p>
-              The MERN Portfolio Builder is a full-stack web application I developed to allow users to create, manage, and showcase their personal portfolios. Using the MERN stack (MongoDB, Express.js, React.js, Node.js), I designed a dynamic platform where users can display their projects, skills, and experiences, with a secure backend for user authentication and portfolio data management. This project integrates both frontend and backend technologies to deliver a seamless,user experience.</p>
-            </div>
-            <footer>
-              <ul className="tech-list">
-                <li>React.js</li>
-                <li>MongoDB</li>
-                <li>Rest API</li>
-                <li>CSS-in-JS & Tailwand CSS</li>
-              </ul>
-            </footer>
-          </div>
-        </ScrollAnimation>
-      </div>
+    <Container>
+      <h2>Get in touch using the form</h2>
+      <form onSubmit={handleSubmit}>
+        <input
+          placeholder="Name"
+          id="name"
+          type="text"
+          name="name"
+          onChange={(e) => {
+            setFormData({ ...formData, name: e.target.value })
+          }}
+          required
+        />
+        {errors.name && <p>{errors.name}</p>}
+        
+        <input
+          placeholder="Email"
+          id="email"
+          type="email"
+          name="email"
+          onChange={(e) => {
+            setFormData({ ...formData, email: e.target.value })
+            verifyEmail(e.target.value)
+          }}
+          required
+        />
+        {errors.email && <p>{errors.email}</p>}
+        
+        <textarea
+          required
+          placeholder="Send a message to get started."
+          id="message"
+          name="message"
+          onChange={(e) => {
+            setMessage(e.target.value)
+            setFormData({ ...formData, message: e.target.value })
+          }}
+        />
+        {errors.message && <p>{errors.message}</p>}
+        
+        <button
+          type="submit"
+          disabled={state.submitting || !validEmail || !message}
+        >
+          Submit
+        </button>
+      </form>
+      <ToastContainer />
     </Container>
-  );
+  )
 }

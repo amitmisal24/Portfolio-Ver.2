@@ -17,7 +17,7 @@ export function Project() {
               <div className="project-links">
                 <a href="https://github.com/amitmisal24/Medical-Audio-Analyzer" target="_blank" rel="noreferrer">
                   <img src={githubIcon} alt="Visit site" /></a>
-                <a href="https://medical-audio-analyzer.vercel.app/" target="_blank" rel="noreferrer">
+                <a href="https://github.com/amitmisal24/Medical-Audio-Analyzer" target="_blank" rel="noreferrer">
                   <img src={externalLink} alt="Visit site" />
                 </a> </div>
             </header>
